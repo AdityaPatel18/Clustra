@@ -1,29 +1,22 @@
 // stores/fileStore.ts
 import { defineStore } from 'pinia'
 
-type FileEntry = {
-  name: string
-  file: File
-  url: string
-}
-
 export const useFileStore = defineStore('fileStore', {
   state: () => ({
-    files: [] as FileEntry[],
+    files: [] as { file: File; url: string; name: string }[],
   }),
-
   actions: {
     addFiles(newFiles: File[]) {
-      const wrapped = newFiles.map(file => ({
-        name: file.name,
+      const processed = newFiles.map(file => ({
         file,
         url: URL.createObjectURL(file),
+        name: file.name,
       }))
-      this.files.push(...wrapped)
+      this.files.push(...processed)
     },
-
     clearFiles() {
-      this.files.forEach(f => URL.revokeObjectURL(f.url)) // Clean memory
+      // Revoke old object URLs before clearing
+      this.files.forEach(({ url }) => URL.revokeObjectURL(url))
       this.files = []
     },
   },
