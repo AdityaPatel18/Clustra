@@ -1,10 +1,6 @@
 <template>
   <div class="upload-page">
-    <div
-      class="upload-box"
-      @drop="handleDrop"
-      @dragover="handleDragOver"
-    >
+    <div class="upload-box" @drop="handleDrop" @dragover="handleDragOver">
       <input
         type="file"
         multiple
@@ -19,16 +15,8 @@
 
       <!-- Preview Thumbnails -->
       <div v-if="selectedFiles.length" class="preview-box">
-        <div
-          v-for="(file, index) in selectedFiles"
-          :key="index"
-          class="thumb"
-        >
-          <img
-            :src="file.url"
-            :alt="file.name"
-            class="thumb-img"
-          />
+        <div v-for="(file, index) in selectedFiles" :key="index" class="thumb">
+          <img :src="file.url" :alt="file.name" class="thumb-img" />
         </div>
       </div>
 
@@ -52,57 +40,52 @@
 </template>
 
 <script setup lang="ts">
-import { useFileStore } from '@/stores/fileStore'
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useFileStore } from "@/stores/fileStore";
+import { computed } from "vue";
+import { useRouter } from "vue-router";
 
-const fileStore = useFileStore()
-const router = useRouter()
+const fileStore = useFileStore();
+const router = useRouter();
 
-const validImageTypes = [
-  'image/png',
-  'image/jpeg',
-  'image/jpg',
-  'image/heic',
-]
+const validImageTypes = ["image/png", "image/jpeg", "image/jpg", "image/heic"];
 
 // Computed alias for store files to use in template
-const selectedFiles = computed(() => fileStore.files)
+const selectedFiles = computed(() => fileStore.files);
 
 // Handle file selection via input
 const handleFileInput = (event: Event) => {
-  const input = event.target as HTMLInputElement
+  const input = event.target as HTMLInputElement;
   if (input.files) {
-    const files = Array.from(input.files).filter(file =>
+    const files = Array.from(input.files).filter((file) =>
       validImageTypes.includes(file.type)
-    )
-    fileStore.addFiles(files)
+    );
+    fileStore.addFiles(files);
   }
-}
+};
 
 // Handle drag-and-drop
 function handleDrop(event: DragEvent) {
-  event.preventDefault()
+  event.preventDefault();
   if (event.dataTransfer?.files) {
-    const files = Array.from(event.dataTransfer.files).filter(file =>
+    const files = Array.from(event.dataTransfer.files).filter((file) =>
       validImageTypes.includes(file.type)
-    )
-    fileStore.addFiles(files)
+    );
+    fileStore.addFiles(files);
   }
 }
 
 // Prevent default to allow drop
 function handleDragOver(event: DragEvent) {
-  event.preventDefault()
+  event.preventDefault();
 }
 
 // Navigate to the classification/loading page
 function classifyPage() {
   if (fileStore.files.length === 0) {
-    alert('Please upload images first.')
-    return
+    alert("Please upload images first.");
+    return;
   }
-  router.push('/loading')
+  router.push("/loading");
 }
 </script>
 
