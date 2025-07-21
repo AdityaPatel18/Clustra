@@ -1,42 +1,62 @@
 <template>
-  <div class="upload-page">
-    <div class="upload-box" @drop="handleDrop" @dragover="handleDragOver">
-      <input
-        type="file"
-        multiple
-        accept=".png, .jpg, .jpeg, .heic"
-        @change="handleFileInput"
-        class="hidden-input"
-        id="fileInput"
-      />
-      <label for="fileInput" class="upload-label">
-        Upload Images (PNG, JPG, JPEG, HEIC)
-      </label>
+  <div class="page-wrapper">
+  <div class="homepage">
+    <div class="title">Clustra</div>
 
-      <!-- Preview Thumbnails -->
-      <div v-if="selectedFiles.length" class="preview-box">
-        <div v-for="(file, index) in selectedFiles" :key="index" class="thumb">
-          <img :src="file.url" :alt="file.name" class="thumb-img" />
+    <div class="center-box">
+      <div class="drop-area">
+        <div class="inner-drop-box">
+          Drag & Drop Files Here
         </div>
+              <div class="button-row">
+        <button class="btn">From Computer</button>
+        <button class="btn upload">Upload</button>
       </div>
-
-      <!-- Upload Controls -->
-      <div class="upload-controls">
-        <label class="upload-input">
-          <input
-            type="file"
-            webkitdirectory
-            directory
-            multiple
-            hidden
-            @change="handleFileInput"
-          />
-          <button class="btn">From Computer</button>
-        </label>
-        <button class="btn upload-btn" @click="classifyPage">Upload</button>
       </div>
     </div>
   </div>
+<!-- About Section -->
+<div class="about-section">
+  <p>
+    Clustra is an intelligent photo grouping tool that helps you quickly identify and organize faces across multiple images.
+    Drag, drop, and let Clustra do the work. No signup or download needed!
+  </p>
+</div>
+
+<!-- Steps Section -->
+<div class="steps-section">
+  <div class="step" v-for="(step, index) in steps" :key="index" :class="{ reverse: index % 2 === 1 }">
+    <img class="step-image" :src="step.image" :alt="step.title" />
+    <div class="step-text">
+      <h3>{{ step.title }}</h3>
+      <p>{{ step.description }}</p>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="perfect-for">
+Whether you’re a photographer organizing thousands of event shots, a family sorting through memories, or friends fresh off a trip, Clustra helps you bring it all together — effortlessly.
+</div>
+
+
+
+
+<theFooter />
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
 </template>
 
 <script setup lang="ts">
@@ -46,6 +66,23 @@ import { useRouter } from "vue-router";
 
 const fileStore = useFileStore();
 const router = useRouter();
+const steps = [
+  {
+    title: "Step 1: Upload Your Pictures",
+    description: "Drag and drop or select the photos you want to organize.",
+    image: "/images/pic01.jpg",
+  },
+  {
+    title: "Step 2: Identify the Faces",
+    description: "Tag or name the people in each group to keep things organized.",
+    image: "/images/pic01.jpg",
+  },
+  {
+    title: "Step 3: Filter and Download",
+    description: "Clustra helps you sort the images you need — then download everything in one click.",
+    image: "/images/pic01.jpg",
+  },
+];
 
 const validImageTypes = ["image/png", "image/jpeg", "image/jpg", "image/heic"];
 
@@ -89,97 +126,185 @@ function classifyPage() {
 }
 </script>
 
+
 <style scoped>
-.upload-page {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f9fafb;
+.body, html {
   margin: 0;
   padding: 0;
+  border: 0;
 }
-
-.upload-box {
-  background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 420px;
-  max-width: 90%;
+.page-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
-.upload-label {
-  display: block;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  color: #4f46e5;
-  font-weight: 600;
-}
-
-.preview-box {
+.homepage {
   width: 100%;
-  min-height: 150px;
-  background-color: #f3f4f6;
-  border: 2px dashed #d1d5db;
-  border-radius: 0.5rem;
+  background-color: #f5f5f5;
+}
+
+.title {
   display: flex;
-  flex-wrap: wrap;
+  align-self: start;
+  padding-left: 2rem;
+  padding-top: 2rem;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.center-box {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  gap: 0.5rem;
+  height: 67vh;
 }
 
-.thumb {
-  width: 60px;
-  height: 60px;
-  overflow: hidden;
-  border-radius: 0.5rem;
-  border: 1px solid #ddd;
-}
-
-.thumb-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.upload-controls {
+.drop-area {
+  width: 35rem;
+  height: 25rem;
+  border: 2px solid #aaa;
+  border-radius: 10px;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 1rem;
+  background-color: white;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
-.upload-input {
-  display: inline-block;
+.inner-drop-box {
+  width: 90%;
+  height: 90%;
+  border: 2px dashed #bbb;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
 }
 
 .btn {
-  padding: 0.6rem 1.1rem;
+  padding: 10px 20px;
   border: none;
-  border-radius: 0.5rem;
-  background-color: #4f46e5;
-  color: white;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: 500;
+  background-color: #e0e0e0;
+  color: #333;
+  font-size: 0.95rem;
   transition: background-color 0.2s ease;
 }
 
 .btn:hover {
-  background-color: #3730a3;
+  background-color: #d0d0d0;
 }
 
-.upload-btn {
-  background-color: #10b981;
+.btn.upload {
+  background-color: #4CAF50;
+  color: white;
 }
 
-.upload-btn:hover {
-  background-color: #059669;
+.btn.upload:hover {
+  background-color: #45a049;
 }
+
+
+
+
+
+
+
+
+.about-section {
+  padding: 1rem 2rem;
+  text-align: center;
+  max-width: 70vw;
+  margin: 0 auto;
+}
+
+
+.about-section p {
+  font-size: 2rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+.steps-section {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  padding: 3rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.step {
+  display: flex;
+  align-items: self-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+  padding-top: 10vh;
+  height: 25rem;
+}
+
+.step.reverse {
+  flex-direction: row-reverse;
+}
+
+.step-image {
+  flex: 1 1 300px;
+  height: 25rem;
+  width: 25rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.step-text {
+  flex: 1 1 300px;
+}
+
+.step-text h3 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.step-text p {
+  font-size: 2rem;
+  color: #444;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.perfect-for {
+    padding: 6rem 2rem;
+  text-align: center;
+  max-width: 70vw;
+  margin: 0 auto;
+  font-size: 2rem;
+  color: #555;
+  line-height: 1.5;
+}
+
 </style>
