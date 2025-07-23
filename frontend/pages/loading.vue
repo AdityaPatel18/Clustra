@@ -1,6 +1,12 @@
 <template>
   <div class="loading-screen">
-    <p>Processing images, please wait...</p>
+    <div class="center-content">
+<h1 class="clustra-logo">
+  <span v-for="(char, i) in 'Clustra'" :key="i" :style="{ animationDelay: `${i * 0.1}s` }" class="wave-letter">
+    {{ char }}
+  </span>
+</h1>      <p class="loading-text">Processing images, please wait...</p>
+    </div>
   </div>
 </template>
 
@@ -50,11 +56,41 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@keyframes wave {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.wave-letter {
+  display: inline-block;
+  animation: wave 1.2s ease-in-out infinite;
+}
+
 .loading-screen {
   height: 100vh;
+  background-color: #f5f1e6;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.4rem;
+}
+
+.center-content {
+  text-align: center;
+}
+
+.clustra-logo {
+  font-size: 5rem;
+  font-weight: 700;
+  color: #5a3e2b;
+  letter-spacing: .5rem;
+}
+
+.loading-text {
+  font-size: 2rem;
+  color: #7d5d45;
 }
 </style>
