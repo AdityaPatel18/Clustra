@@ -135,11 +135,10 @@ const downloadSelected = async () => {
 
   // Wait for all fetches to finish
   await Promise.all(fileFetches);
-  if (process) {
-    // Generate zip and trigger download
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "photos.zip");
-  }
+  const zipBlob = await zip.generateAsync({ type: "blob" });
+  const { saveAs } = await import('file-saver');
+  saveAs(zipBlob, "photos.zip");
+
 };
 
 onMounted(() => {
@@ -163,7 +162,7 @@ onMounted(() => {
 .sidebar {
   position: sticky;
   top: 2rem;
-  width: 10%;
+  min-width: 8rem;
   height: 81vh;
   padding: 1rem;
   border: 1px solid #ddd;
@@ -186,7 +185,7 @@ onMounted(() => {
   overflow-y: auto;
 }
 
-.chip {
+.chip, .reset-filter {
   padding: 6px 12px;
   border: 1px solid #aaa;
   border-radius: 20px;
@@ -205,15 +204,6 @@ onMounted(() => {
   background-color: #0066cc;
   color: white;
   border-color: #005bb5;
-}
-.reset-filter {
-  padding: 6px 12px;
-  border: 1px solid #aaa;
-  border-radius: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  background-color: white;
-  transition: all 0.2s ease;
 }
 
 .download-section {
@@ -283,7 +273,7 @@ onMounted(() => {
   text-align: center;
 }
 .card:hover .overlay {
-  opacity: 2;
+  opacity: 1;
 }
 .card.selected {
   border: 0.5rem solid #007bff;
