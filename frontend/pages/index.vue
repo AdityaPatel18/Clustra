@@ -17,6 +17,8 @@
                 class="thumb"
               >
                 <img :src="file.url" :alt="file.name" class="thumb-img" />
+                <button class="remove-btn" @click=removeFile(index)>
+                </button>
               </div>
             </div>
             <div v-else class="placeholder-text">Drag & Drop Files Here</div>
@@ -36,51 +38,72 @@
             <button class="btn" @click="triggerFileInput">From Computer</button>
             <button class="btn upload" @click="classifyPage">Upload</button>
           </div>
-        </div>
+        </div><div class="numberSelected">{{ uploadedCountText }}</div>
+
       </div>
     </div>
     <div class="info">
-    <!-- About Section -->
-    <div class="about-section">
-      <p>
-        <span class="special-word">Clustra</span> is an intelligent photo grouping tool that helps you quickly
-        identify and organize faces across multiple images. Drag, drop, and let
-        <span class="special-word">Clustra</span> do the work. No signup or download needed!
-      </p>
-    </div>
-
-    <!-- Steps Section -->
-  <div class="steps-section">
-    <div class="step">
-      <img class="step-image" src="/images/pic01.jpg" alt="Step 1: Upload Your Pictures" />
-      <div class="step-text">
-        <h3>Upload Your Pictures</h3>
-        <p>Drag and drop or select the photos you want to organize.</p>
+      <!-- About Section -->
+      <div class="about-section">
+        <p>
+          <span class="special-word">Clustra</span> is an intelligent photo
+          grouping tool that helps you quickly identify and organize faces
+          across multiple images. Drag, drop, and let
+          <span class="special-word">Clustra</span> do the work. No signup or
+          download needed!
+        </p>
       </div>
-    </div>
 
-    <div class="step reverse">
-      <img class="step-image" src="/images/pic01.jpg" alt="Step 2: Identify the Faces" />
-      <div class="step-text">
-        <h3>Identify the Faces</h3>
-        <p>Tag or name the people in each group to keep things organized.</p>
+      <!-- Steps Section -->
+      <div class="steps-section">
+        <div class="step">
+          <img
+            class="step-image"
+            src="/images/pic01.jpg"
+            alt="Step 1: Upload Your Pictures"
+          />
+          <div class="step-text">
+            <h3>Upload Your Pictures</h3>
+            <p>Drag and drop or select the photos you want to organize.</p>
+          </div>
+        </div>
+
+        <div class="step reverse">
+          <img
+            class="step-image"
+            src="/images/pic01.jpg"
+            alt="Step 2: Identify the Faces"
+          />
+          <div class="step-text">
+            <h3>Identify the Faces</h3>
+            <p>
+              Tag or name the people in each group to keep things organized.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <img
+            class="step-image"
+            src="/images/pic01.jpg"
+            alt="Step 3: Filter and Download"
+          />
+          <div class="step-text">
+            <h3>Filter and Download</h3>
+            <p>
+              <span class="special-word">Clustra</span> helps you sort the
+              images you need — then download everything in one click.
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="step">
-      <img class="step-image" src="/images/pic01.jpg" alt="Step 3: Filter and Download" />
-      <div class="step-text">
-        <h3>Filter and Download</h3>
-        <p><span class="special-word">Clustra</span> helps you sort the images you need — then download everything in one click.</p>
+      <div class="perfect-for">
+        Whether you’re a photographer organizing thousands of event shots, a
+        family sorting through memories, or friends fresh off a trip,
+        <span class="special-word">Clustra</span>
+        helps you bring it all together — effortlessly.
       </div>
-    </div>
-  </div>
-
-    <div class="perfect-for">
-      Whether you’re a photographer organizing thousands of event shots, a
-      family sorting through memories, or friends fresh off a trip, <span class="special-word">Clustra</span>
-      helps you bring it all together — effortlessly.
-    </div>
     </div>
     <theFooter />
   </div>
@@ -95,26 +118,6 @@ const fileStore = useFileStore();
 const router = useRouter();
 const fileInputRef = ref<HTMLInputElement | null>(null); // 👈 new
 
-const steps = [
-  {
-    title: "Step 1: Upload Your Pictures",
-    description: "Drag and drop or select the photos you want to organize.",
-    image: "/images/pic01.jpg",
-  },
-  {
-    title: "Step 2: Identify the Faces",
-    description:
-      "Tag or name the people in each group to keep things organized.",
-    image: "/images/pic01.jpg",
-  },
-  {
-    title: "Step 3: Filter and Download",
-    description:
-      "Clustra helps you sort the images you need — then download everything in one click.",
-    image: "/images/pic01.jpg",
-  },
-];
-
 const validImageTypes = ["image/png", "image/jpeg", "image/jpg", "image/heic"];
 const selectedFiles = computed(() => fileStore.files);
 
@@ -123,15 +126,31 @@ function triggerFileInput() {
   fileInputRef.value?.click();
 }
 
-// 👇 updated to work with the input
+const uploadedCountText = computed(() => {
+  const count = selectedFiles.value.length;
+  return `${count} uploaded. Max 50 imageToSquare.`;
+
+});
+function removeFile(index: number) {
+  fileStore.files.splice(index, 1);
+}
+
 function handleFileInput(event: Event) {
   const input = event.target as HTMLInputElement;
   if (input.files) {
     const files = Array.from(input.files).filter((file) =>
       validImageTypes.includes(file.type)
     );
-    fileStore.addFiles(files);
-    input.value = ""; // Clear file input so same file can be selected again
+
+    const availableSlots = 50 - (fileStore.files?.length ?? 0);
+    if (availableSlots <= 0) {
+      alert("You can upload a maximum of 50 images.");
+    } else {
+      const limitedFiles = files.slice(0, availableSlots);
+      fileStore.addFiles(limitedFiles);
+    }
+
+    input.value = "";
   }
 }
 
@@ -141,7 +160,14 @@ function handleDrop(event: DragEvent) {
     const files = Array.from(event.dataTransfer.files).filter((file) =>
       validImageTypes.includes(file.type)
     );
-    fileStore.addFiles(files);
+
+    const availableSlots = 50 - (fileStore.files?.length ?? 0);
+    if (availableSlots <= 0) {
+      alert("You can upload a maximum of 50 images.");
+    } else {
+      const limitedFiles = files.slice(0, availableSlots);
+      fileStore.addFiles(limitedFiles);
+    }
   }
 }
 
@@ -156,16 +182,39 @@ function classifyPage() {
   }
   router.push("/loading");
 }
+
+let lastUrl = "";
+
+onMounted(() => {
+  if (typeof window === "undefined") return; // Skip on SSR
+
+  lastUrl = window.location.href;
+
+  window.addEventListener("popstate", () => {
+    const currentUrl = window.location.href;
+
+    // Use optional chaining and defaulting to prevent crashes
+    const forward = window.history?.state?.forward;
+
+    if (forward) {
+      window.history.go(-1);
+    } else {
+      // Handle back button
+      router.replace("/");
+    }
+
+    lastUrl = currentUrl;
+  });
+});
 </script>
 
 <style scoped>
-
 /* Apply to both <html> and <body> just to be safe */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 }
-
 
 .page-wrapper {
   display: flex;
@@ -184,7 +233,7 @@ html, body {
   padding-top: 2rem;
   font-size: 3rem;
   font-weight: bold;
-  color: #F5F5DC;
+  color: #f5f5dc;
 }
 
 .thumb {
@@ -192,11 +241,34 @@ html, body {
   height: 60px;
   overflow: hidden;
   border-radius: 0.5rem;
+  position: relative;
 }
 .thumb-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-weight: bold;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  line-height: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.numberSelected {
+  color: beige;
+  padding-top: 1rem;
 }
 
 .inner-drop-box {
@@ -221,7 +293,11 @@ html, body {
   gap: 10px;
   justify-content: center;
   width: 100%;
+  overflow-y: auto;
+  max-height: 300px;
 }
+
+
 
 .placeholder-text {
   width: 100%;
@@ -271,7 +347,7 @@ html, body {
 }
 
 .btn:hover {
-  background-color: #D2691E;
+  background-color: #d2691e;
 }
 
 .btn.upload {
@@ -284,7 +360,7 @@ html, body {
 }
 .info {
   width: 100%;
-  border-radius: 2rem ;
+  border-radius: 2rem;
   background-color: beige;
 }
 
@@ -293,7 +369,6 @@ html, body {
   text-align: center;
   max-width: 70vw;
   margin: 0 auto;
- 
 }
 
 .about-section p {
@@ -304,7 +379,7 @@ html, body {
 
 .steps-section {
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
   gap: 3rem;
   padding: 3rem 2rem;
   max-width: 1000px;
@@ -376,7 +451,6 @@ html, body {
 }
 
 .special-word {
-  color: #D2691E;
+  color: #d2691e;
 }
-
 </style>
