@@ -1,26 +1,17 @@
-from fastapi import FastAPI
 from pydantic import BaseModel
-from sklearn.cluster import DBSCAN
 from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
-from pydantic import BaseModel
 from typing import Dict
 from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy import ARRAY, Column, Integer, String, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 import cv2
 import base64
-import numpy as np
-from fastapi import FastAPI
-from contextlib import asynccontextmanager
-import numpy as np
 from deepface import DeepFace
-from deepface import DeepFace
-from sklearn.metrics.pairwise import cosine_similarity
 import os 
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 Base = declarative_base()
 
