@@ -12,6 +12,8 @@ import base64
 from deepface import DeepFace
 import os 
 
+import time
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 Base = declarative_base()
 
@@ -83,12 +85,36 @@ def cluster_faces(data: FaceData):
     return result
 
 
+class FaceEmbedder:
+    def __init__(self):
+        dummy_img = np.random.randint(0, 255, (160, 160, 3), dtype=np.uint8)
+        try:
+            DeepFace.represent(dummy_img, model_name="Facenet", enforce_detection=False)
+        except:
+            pass
+    
+    def extract_face_embedding(self, image):
+        try:
+            start_time = time.time()
+
+            embedding = DeepFace.represent(
+                image, 
+                model_name="Facenet", 
+                enforce_detection=False,
+                detector_backend='skip',
+                align=False
+            )
+            end_time = time.time()
+            print(f"DeepFace.represent: {end_time - start_time:.3f} seconds")
+
+            return embedding[0]["embedding"]
+        except Exception:
+            return None
+
+_embedder = FaceEmbedder()
+
 def extract_face_embedding(image):
-    try:
-        embedding = DeepFace.represent(image, model_name="Facenet", enforce_detection=False)
-        return embedding[0]["embedding"]
-    except Exception:
-        return None
+    return _embedder.extract_face_embedding(image)
 
 def preprocessor(file_content: bytes, face_context: dict) -> list:
         image_array = np.frombuffer(file_content, dtype=np.uint8)
