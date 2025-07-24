@@ -1,7 +1,6 @@
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 import numpy as np
-from typing import Dict
 from sklearn.metrics.pairwise import cosine_similarity
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
@@ -11,7 +10,6 @@ import cv2
 import base64
 from deepface import DeepFace
 import os 
-
 import time
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -40,51 +38,6 @@ class FileModel(Base):
     filedata = Column(LargeBinary)
     individuals = Column(ARRAY(String), nullable=True)
 
-@app.post("/clusterr")
-def cluster_faces(data: FaceData):
-
-
-    vectors = np.array(data.vectors)
-    file_names = data.fileNames
-
-    if len(vectors) != len(file_names):
-        return {"error": "Mismatch between number of vectors and filenames."}
-
-    # Initialize clustering context
-    clustered_embeddings = []
-    clustered_labels = []
-    image_to_people: Dict[str, set] = {}
-
-    for vector, filename in zip(vectors, file_names):
-        if clustered_embeddings:
-            sims = cosine_similarity([vector], clustered_embeddings)[0]
-            max_sim_index = np.argmax(sims)
-            max_sim = sims[max_sim_index]
-
-            if max_sim > 0.6:
-                person = clustered_labels[max_sim_index]
-            else:
-                person = f"Person {len(set(clustered_labels)) + 1}"
-                clustered_embeddings.append(vector)
-                clustered_labels.append(person)
-        else:
-            person = "Person 1"
-            clustered_embeddings.append(vector)
-            clustered_labels.append(person)
-
-        if filename not in image_to_people:
-            image_to_people[filename] = set()
-        image_to_people[filename].add(person)
-
-    # Convert sets to lists
-    result = {
-        "clustered": {filename: list(people) for filename, people in image_to_people.items()},
-        "people": list(set(clustered_labels))
-    }
-
-    return result
-
-
 class FaceEmbedder:
     def __init__(self):
         dummy_img = np.random.randint(0, 255, (160, 160, 3), dtype=np.uint8)
@@ -95,7 +48,6 @@ class FaceEmbedder:
     
     def extract_face_embedding(self, image):
         try:
-            start_time = time.time()
 
             embedding = DeepFace.represent(
                 image, 
@@ -104,8 +56,7 @@ class FaceEmbedder:
                 detector_backend='skip',
                 align=False
             )
-            end_time = time.time()
-            print(f"DeepFace.represent: {end_time - start_time:.3f} seconds")
+
 
             return embedding[0]["embedding"]
         except Exception:
@@ -117,6 +68,7 @@ def extract_face_embedding(image):
     return _embedder.extract_face_embedding(image)
 
 def preprocessor(file_content: bytes, face_context: dict) -> list:
+        start_time = time.time()
         image_array = np.frombuffer(file_content, dtype=np.uint8)
         image = cv2.imdecode(image_array, cv2.IMREAD_COLOR)
         
@@ -147,6 +99,8 @@ def preprocessor(file_content: bytes, face_context: dict) -> list:
             face_context["labels"].append(new_label)
             face_context["face"].append(face)
             person_labels.append(new_label)
+        end_time = time.time()
+        print("run time =" + str(end_time-start_time))
         return person_labels
 
 
@@ -162,7 +116,50 @@ def detect_crop_faces(image):
                       face_obj["facial_area"]["w"], face_obj["facial_area"]["h"]
         cropped_face = image[y:y+h, x:x+w]
         cropped_faces.append(cropped_face)
+    return cropped_faces
 
+def detect_crop_faces_optimized(image):
+    """
+    Optimized version with multiple improvements but less accurate
+    """
+    start_time = time.time()
+    
+    try:
+        # Use faster detector backends
+        face_objs = DeepFace.extract_faces(
+            image, 
+            detector_backend="opencv",  # or "mtcnn" for better accuracy vs speed trade-off
+            enforce_detection=False,    # Don't raise exception if no faces found
+            align=False                 # Skip alignment if not needed for your use case
+        )
+    except Exception as e:
+        print(f"Face detection failed: {e}")
+        return []
+    
+    if not face_objs:
+        return []
+    
+    # Pre-allocate list if you know approximate face count
+    cropped_faces = []
+    
+    # Vectorized approach - process multiple faces more efficiently
+    for face_obj in face_objs:
+        facial_area = face_obj["facial_area"]
+        x, y, w, h = facial_area["x"], facial_area["y"], facial_area["w"], facial_area["h"]
+        
+        # Add bounds checking to prevent index errors
+        img_height, img_width = image.shape[:2]
+        x = max(0, min(x, img_width))
+        y = max(0, min(y, img_height))
+        w = min(w, img_width - x)
+        h = min(h, img_height - y)
+        
+        if w > 0 and h > 0:  # Only crop if valid dimensions
+            cropped_face = image[y:y+h, x:x+w]
+            cropped_faces.append(cropped_face)
+    
+    end_time = time.time()
+    print(f"Face detection runtime: {end_time - start_time:.3f}s, found {len(cropped_faces)} faces")
     return cropped_faces
 
 @app.post("/extract")
@@ -171,44 +168,47 @@ async def extract_faces(files: list[UploadFile] = File(...)):
         if not files:
             return JSONResponse(content={"message": "No files uploaded"}, status_code=400)
         
-        uploaded_files = []
         face_context = {
             "embeddings": [],
             "labels": [],
             "face": [],
         }
-        for file in files:
-            file_content = await file.read()
-
-            person_attributes = preprocessor(file_content, face_context)
-            result = FileModel(
-                filename=file.filename, 
-                filedata=file_content,
-                individuals = person_attributes
-            )
-            uploaded_files.append(result)
         
-        # Build response data
+        uploaded_files = []
+        
+        for file in files:
+            # Process file content without storing it
+            file_content = await file.read()
+            person_attributes = preprocessor(file_content, face_context)
+            
+            # Don't store file_content, just the results
+            result = {
+                "filename": file.filename,
+                "individuals": person_attributes
+            }
+            uploaded_files.append(result)
+            
+            # Clear file_content from memory immediately
+            del file_content
+        
+        # Efficient unique face processing
+        unique_faces = {}
+        seen_labels = set()
+        
+        for label, face_img in zip(face_context["labels"], face_context["face"]):
+            if label not in seen_labels:
+                seen_labels.add(label)
+                unique_faces[label] = base64.b64encode(cv2.imencode('.jpg', face_img)[1]).decode('utf-8')
+        
         response_data = {
-            "result": [
-                {
-                    "filename": f.filename,
-                    "individuals": f.individuals
-                } for f in uploaded_files
+            "result": uploaded_files,
+            "people_faces": [
+                {"label": label, "face": img_b64} 
+                for label, img_b64 in unique_faces.items()
             ]
         }
-
-        unique_faces = {
-            label: base64.b64encode(cv2.imencode('.jpg', face_img)[1]).decode('utf-8')
-            for label, face_img in zip(face_context["labels"], face_context["face"])
-            if label not in face_context["labels"][:face_context["labels"].index(label)]
-        }
-        response_data["people_faces"] = [
-            {"label": label, "face": img_b64} for label, img_b64 in unique_faces.items()
-        ]
 
         return JSONResponse(content=response_data, status_code=200)
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error uploading files: {str(e)}")
- 
+        raise HTTPException(status_code=500, detail=f"Error processing files: {str(e)}")

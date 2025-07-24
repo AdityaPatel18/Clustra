@@ -6,8 +6,8 @@ export const useFileStore = defineStore("fileStore", {
     files: [] as { file: File; url: string; name: string; people: string[] }[],
     people_faces: [] as {
       label: string;
-      face: string; //base 64 image string
-      name?: string; // optional at first
+      face: string;
+      name?: string;
     }[],
   }),
   actions: {
@@ -45,7 +45,3 @@ export const useFileStore = defineStore("fileStore", {
     },
   },
 });
-
-// Primary: #2e1503 (Dark Brown)
-// Secondary: #F5F5DC (Beige)
-// Accent: #D2691E (Chocolate Orange) - for buttons and highlights
