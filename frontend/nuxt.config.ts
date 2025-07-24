@@ -4,4 +4,5 @@ export default defineNuxtConfig({
   srcDir: "./",
   modules: ["@pinia/nuxt"],
   devtools: { enabled: true },
+  css: ['~/assets/css/main.css']
 });

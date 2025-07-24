@@ -72,7 +72,7 @@ onMounted(async () => {
 
 .loading-screen {
   height: 100vh;
-  background-color: #f5f1e6;
+  background-color: beige;
   display: flex;
   justify-content: center;
   align-items: center;

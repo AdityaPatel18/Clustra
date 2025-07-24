@@ -45,3 +45,7 @@ export const useFileStore = defineStore("fileStore", {
     },
   },
 });
+
+// Primary: #2e1503 (Dark Brown)
+// Secondary: #F5F5DC (Beige)
+// Accent: #D2691E (Chocolate Orange) - for buttons and highlights

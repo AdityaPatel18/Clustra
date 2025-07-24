@@ -1,8 +1,12 @@
 <template>
+<div class="title-container">
+  <div class="clustra-title">Clustra</div>
+  <div class="center-subtitle">Everything’s sorted! Pick your favorites to save.</div>
+</div>
   <div class="container">
-    <!-- Sidebar Filters -->
+    
     <aside class="sidebar">
-      <h2>Filter by People</h2>
+      <h2>Filter & Download</h2>
       <div class="chips">
         <button class="reset-filter" @click="resetToggle">Reset All</button>
 
@@ -15,12 +19,12 @@
           {{ person }}
         </div>
       </div>
-      <button class="filter-btn" @click="filterImages">Search</button>
       <div class="download-section">
-        <button @click="toggleSelectAll">
+        <button class="selectButton" @click="toggleSelectAll">
           {{ allFilteredSelected ? "Deselect All" : "Select All" }}
         </button>
         <button class="download" @click="downloadSelected">Download</button>
+        <p>{{ selectedFiles.length }} images selected</p>
       </div>
     </aside>
 
@@ -70,18 +74,14 @@ function togglePerson(person: string) {
 function resetToggle() {
   selectedPeople.value = [];
 }
-const filteredFiles = ref(fileStore.files);
+const filteredFiles = computed(() => {
+  if (selectedPeople.value.length === 0) return fileStore.files;
 
-function filterImages() {
-  if (selectedPeople.value.length === 0) {
-    filteredFiles.value = fileStore.files;
-    return;
-  }
-
-  filteredFiles.value = fileStore.files.filter((file) =>
+  return fileStore.files.filter((file) =>
     selectedPeople.value.every((person) => file.people.includes(person))
   );
-}
+});
+
 const selectedFiles = ref<string[]>([]);
 function getCleanPeople(people: string[]): string {
   const unique = [...new Set(people)];
@@ -109,16 +109,14 @@ function toggleSelectAll() {
     selectedFiles.value.includes(name)
   );
 
-  if (allSelected) {
-    // Deselect all
-    selectedFiles.value = selectedFiles.value.filter(
-      (name) => !allNames.includes(name)
-    );
-  } else {
-    // Select all filtered files
-    const unique = new Set([...selectedFiles.value, ...allNames]);
-    selectedFiles.value = [...unique];
-  }
+if (allSelected) {
+  selectedFiles.value = selectedFiles.value.filter(
+    name => !filteredFiles.value.some(f => f.name === name)
+  );
+} else {
+  const filteredNames = filteredFiles.value.map(f => f.name);
+  selectedFiles.value = [...new Set([...selectedFiles.value, ...filteredNames])];
+}
 }
 const downloadSelected = async () => {
   const zip = new JSZip();
@@ -151,12 +149,36 @@ onMounted(() => {
 <style scoped>
 .container {
   display: flex;
-  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px;
   gap: 24px;
-
+  background-color: beige;
   height: 900rem;
+}
+
+.title-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  background: beige;
+  padding: 1rem 0;
+  padding-bottom: 0rem;
+}
+
+.clustra-title {
+  justify-self: start;
+  padding-left: 2rem;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #2e1503;
+}
+
+.center-subtitle {
+    grid-column: 2 / 4;
+  justify-self: self-start;
+  font-size: 2rem;
+  font-weight: 500;
+  color: #3a2e2e;
 }
 
 .sidebar {
@@ -165,15 +187,22 @@ onMounted(() => {
   min-width: 8rem;
   height: 81vh;
   padding: 1rem;
-  border: 1px solid #ddd;
+  border: 2px solid #2e1503;
   border-radius: 8px;
-  background: #f9f9f9;
+  background: #F5F5DC;
   display: flex;
   flex-direction: column;
+  gap: .5rem;
+scrollbar-color: transparent transparent;
+}
+
+.sidebar:hover {
+      scrollbar-width: thin;
+  scrollbar-color: #572908 transparent;
 }
 
 .sidebar h2 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
 
 .chips {
@@ -183,50 +212,72 @@ onMounted(() => {
   margin-bottom: 1rem;
   height: 55vh;
   overflow-y: auto;
+  padding-right: .5rem;
+  
 }
 
 .chip, .reset-filter {
   padding: 6px 12px;
-  border: 1px solid #aaa;
+  border: 2px solid #2e1503;
   border-radius: 20px;
   font-size: 14px;
   cursor: pointer;
-  background-color: white;
+  background-color: transparent;
   transition: all 0.2s ease;
   text-align: center;
 }
 
-.chip:hover {
-  background-color: #e6f0ff;
+.chip:hover, .reset-filter:hover {
+  background-color: #D2691E;
 }
 
 .chip.active {
-  background-color: #0066cc;
-  color: white;
-  border-color: #005bb5;
+  background-color: #D2691E;
+  color: 2e1503;
 }
 
 .download-section {
-  margin-top: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.filter-btn {
-  width: 100%;
+.selectButton {
+    width: 90%;
   padding: 10px;
   font-size: 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  background-color: beige;
+  color: #2e1503;
+  border: 2px solid #2e1503;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;  
+}
+
+.selectButton:hover {
+    background-color: #D2691E;
+}
+.filter-btn, .download {
+  width: 90%;
+  padding: 10px;
+  font-size: 15px;
+  background-color: beige;
+  color: #2e1503;
+  border: 2px solid #2e1503;
+  border-radius: 2rem;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .filter-btn:hover {
-  background-color: #0056b3;
+  background-color: #D2691E;
+}
+
+.download:hover {
+    background-color: green;
+}
+.download {
+    background-color: #D2691E;
 }
 
 .gallery {
@@ -241,7 +292,6 @@ onMounted(() => {
 
 .card {
   position: relative;
-  background: white;
   border-radius: 8px;
   height: 10rem;
   overflow: hidden;
@@ -276,7 +326,14 @@ onMounted(() => {
   opacity: 1;
 }
 .card.selected {
-  border: 0.5rem solid #007bff;
+  border: 0.5rem solid #D2691E;
   height: 9rem;
 }
+
+.download-section p {
+    text-align: center;
+}
+
+
+
 </style>

@@ -1,6 +1,10 @@
 <template>
+  
   <div class="container">
-    <h2 class="title">Label Faces</h2>
+          <div class="clustra-title">Clustra</div>
+
+    <h2 class="title">Who’s who? Label them before you go.
+</h2>
 
     <form @submit.prevent="submitLabels">
       <div class="grid">
@@ -21,7 +25,7 @@
 
       <button type="submit" class="submit-btn">Submit</button>
     </form>
-  </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -52,51 +56,63 @@ onMounted(() => {
 </script>
 
 <style scoped>
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .container {
-  max-width: 1000px;
-  margin: 2rem auto;
-  padding: 1rem;
-  background-color: #fdf6ec;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-.title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  text-align: center;
-  color: #3a2e2e;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 20px;
-  margin-bottom: 2rem;
-}
-
-.face-card {
+  min-height: 100vh;
+  min-width: 100vw;
+  background-color: beige;
   display: flex;
   flex-direction: column;
+  justify-content: start;
   align-items: center;
 }
 
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  text-align: center;
+  color: #3a2e2e;
+  margin-top: 1rem;
+}
+.clustra-title {
+  align-self: start;
+  padding-left: 2rem;
+  padding-top: 2rem;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #2e1503;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  max-width: 80vw;
+}
+
+.face-card {
+  width: 120px;
+}
 .face-img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border: 2px solid #ccc;
-  margin-bottom: 0.5rem;
+  width: 120px;
+  height: 120px;
+  border-radius: 1.5rem;
 }
 
 .input {
-  width: 100%;
+  width: 84%;
   padding: 0.4rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid #bbb;
+  border: 1px solid #2e1503;
   font-size: 0.9rem;
-}
+background-color: beige;}
 
 .submit-btn {
   display: block;
@@ -109,6 +125,7 @@ onMounted(() => {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
+  margin-top: 2rem;
 }
 
 .submit-btn:hover {
