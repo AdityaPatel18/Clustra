@@ -45,12 +45,12 @@ faces.forEach((f) => {
 function submitLabels() {
   fileStore.updateFaceLabels(nameInputs);
   console.log("Updated face labels:", fileStore.people_faces);
-  router.push("/clusteringScreen");
+  router.replace("/clusteringScreen");
 }
 
 onMounted(() => {
   if (fileStore.files.length === 0) {
-    router.push('/')
+    router.replace('/')
   }
 })
 </script>

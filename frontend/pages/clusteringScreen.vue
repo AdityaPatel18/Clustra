@@ -53,7 +53,6 @@ import { ref, computed, onMounted } from "vue";
 import { useFileStore } from "@/stores/fileStore";
 import { useRouter } from "vue-router";
 import JSZip from "jszip";
-import { saveAs } from "file-saver";
 
 const fileStore = useFileStore();
 const router = useRouter();
@@ -141,7 +140,7 @@ const downloadSelected = async () => {
 
 onMounted(() => {
   if (fileStore.files.length === 0) {
-    router.push("/");
+    router.replace("/");
   }
 });
 </script>

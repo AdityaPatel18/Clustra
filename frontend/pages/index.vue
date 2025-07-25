@@ -180,32 +180,9 @@ function classifyPage() {
     alert("Please upload images first.");
     return;
   }
-  router.push("/loading");
+  router.replace("/loading");
 }
 
-let lastUrl = "";
-
-onMounted(() => {
-  if (typeof window === "undefined") return; // Skip on SSR
-
-  lastUrl = window.location.href;
-
-  window.addEventListener("popstate", () => {
-    const currentUrl = window.location.href;
-
-    // Use optional chaining and defaulting to prevent crashes
-    const forward = window.history?.state?.forward;
-
-    if (forward) {
-      window.history.go(-1);
-    } else {
-      // Handle back button
-      router.replace("/");
-    }
-
-    lastUrl = currentUrl;
-  });
-});
 </script>
 
 <style scoped>
