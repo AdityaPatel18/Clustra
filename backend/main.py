@@ -11,17 +11,18 @@ import base64
 from deepface import DeepFace
 import os 
 import time
+from dotenv import load_dotenv
 
+load_dotenv()
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 Base = declarative_base()
 
 app = FastAPI()
 
-origins = os.getenv("CORS_ORIGINS", "").split(",")
-
+origin = os.getenv("CORS_ORIGINS")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=[origin],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
