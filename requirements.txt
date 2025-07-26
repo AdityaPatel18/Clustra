@@ -4,5 +4,6 @@ sqlalchemy
 psycopg2-binary
 python-multipart
 opencv-python
-deepface
+tensorflow>=2.9.0,<3.0.0
+deepface>=0.0.75
 numpy
