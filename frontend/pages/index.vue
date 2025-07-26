@@ -299,7 +299,6 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 67vh;
 }
 
 .center-box-header {
@@ -311,8 +310,8 @@ body {
 }
 
 .drop-area {
-  width: 35rem;
-  height: 25rem;
+width: clamp(20rem, 40vw, 35rem);
+height: clamp(15rem, 30vw, 25rem);
   border: 2px solid tan;
   border-radius: 2rem;
   display: flex;

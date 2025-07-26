@@ -153,7 +153,6 @@ onMounted(() => {
   padding: 40px;
   gap: 24px;
   background-color: beige;
-  height: 900rem;
 }
 
 .title-container {
