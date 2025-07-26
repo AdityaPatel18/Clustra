@@ -9,3 +9,4 @@ deepface>=0.0.75
 numpy
 scikit-learn
 tf-keras
+python-dotenv
