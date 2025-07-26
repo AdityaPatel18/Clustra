@@ -125,12 +125,11 @@ def detect_crop_faces_optimized(image):
     start_time = time.time()
     
     try:
-        # Use faster detector backends
         face_objs = DeepFace.extract_faces(
             image, 
-            detector_backend="opencv",  # or "mtcnn" for better accuracy vs speed trade-off
-            enforce_detection=False,    # Don't raise exception if no faces found
-            align=False                 # Skip alignment if not needed for your use case
+            detector_backend="opencv",
+            enforce_detection=False,
+            align=False
         )
     except Exception as e:
         print(f"Face detection failed: {e}")
@@ -139,22 +138,19 @@ def detect_crop_faces_optimized(image):
     if not face_objs:
         return []
     
-    # Pre-allocate list if you know approximate face count
     cropped_faces = []
     
-    # Vectorized approach - process multiple faces more efficiently
     for face_obj in face_objs:
         facial_area = face_obj["facial_area"]
         x, y, w, h = facial_area["x"], facial_area["y"], facial_area["w"], facial_area["h"]
         
-        # Add bounds checking to prevent index errors
         img_height, img_width = image.shape[:2]
         x = max(0, min(x, img_width))
         y = max(0, min(y, img_height))
         w = min(w, img_width - x)
         h = min(h, img_height - y)
         
-        if w > 0 and h > 0:  # Only crop if valid dimensions
+        if w > 0 and h > 0:
             cropped_face = image[y:y+h, x:x+w]
             cropped_faces.append(cropped_face)
     
@@ -177,21 +173,17 @@ async def extract_faces(files: list[UploadFile] = File(...)):
         uploaded_files = []
         
         for file in files:
-            # Process file content without storing it
             file_content = await file.read()
             person_attributes = preprocessor(file_content, face_context)
             
-            # Don't store file_content, just the results
             result = {
                 "filename": file.filename,
                 "individuals": person_attributes
             }
             uploaded_files.append(result)
             
-            # Clear file_content from memory immediately
             del file_content
         
-        # Efficient unique face processing
         unique_faces = {}
         seen_labels = set()
         

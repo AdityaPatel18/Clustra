@@ -1,10 +1,11 @@
 <template>
-<div class="title-container">
-  <div class="clustra-title">Clustra</div>
-  <div class="center-subtitle">Everything’s sorted! Pick your favorites to save.</div>
-</div>
+  <div class="title-container">
+    <div class="clustra-title">Clustra</div>
+    <div class="center-subtitle">
+      Everything’s sorted! Pick your favorites to save.
+    </div>
+  </div>
   <div class="container">
-    
     <aside class="sidebar">
       <h2>Filter & Download</h2>
       <div class="chips">
@@ -87,7 +88,6 @@ function getCleanPeople(people: string[]): string {
   const filtered = unique.filter((p) => p !== "Unknown");
   return filtered.join(", ");
 }
-// Toggle logic
 function toggleSelection(fileName: string) {
   if (selectedFiles.value.includes(fileName)) {
     selectedFiles.value = selectedFiles.value.filter(
@@ -108,14 +108,16 @@ function toggleSelectAll() {
     selectedFiles.value.includes(name)
   );
 
-if (allSelected) {
-  selectedFiles.value = selectedFiles.value.filter(
-    name => !filteredFiles.value.some(f => f.name === name)
-  );
-} else {
-  const filteredNames = filteredFiles.value.map(f => f.name);
-  selectedFiles.value = [...new Set([...selectedFiles.value, ...filteredNames])];
-}
+  if (allSelected) {
+    selectedFiles.value = selectedFiles.value.filter(
+      (name) => !filteredFiles.value.some((f) => f.name === name)
+    );
+  } else {
+    const filteredNames = filteredFiles.value.map((f) => f.name);
+    selectedFiles.value = [
+      ...new Set([...selectedFiles.value, ...filteredNames]),
+    ];
+  }
 }
 const downloadSelected = async () => {
   const zip = new JSZip();
@@ -133,9 +135,8 @@ const downloadSelected = async () => {
   // Wait for all fetches to finish
   await Promise.all(fileFetches);
   const zipBlob = await zip.generateAsync({ type: "blob" });
-  const { saveAs } = await import('file-saver');
+  const { saveAs } = await import("file-saver");
   saveAs(zipBlob, "photos.zip");
-
 };
 
 onMounted(() => {
@@ -173,7 +174,7 @@ onMounted(() => {
 }
 
 .center-subtitle {
-    grid-column: 2 / 4;
+  grid-column: 2 / 4;
   justify-self: self-start;
   font-size: 2rem;
   font-weight: 500;
@@ -188,15 +189,15 @@ onMounted(() => {
   padding: 1rem;
   border: 2px solid #2e1503;
   border-radius: 8px;
-  background: #F5F5DC;
+  background: #f5f5dc;
   display: flex;
   flex-direction: column;
-  gap: .5rem;
-scrollbar-color: transparent transparent;
+  gap: 0.5rem;
+  scrollbar-color: transparent transparent;
 }
 
 .sidebar:hover {
-      scrollbar-width: thin;
+  scrollbar-width: thin;
   scrollbar-color: #572908 transparent;
 }
 
@@ -211,11 +212,11 @@ scrollbar-color: transparent transparent;
   margin-bottom: 1rem;
   height: 55vh;
   overflow-y: auto;
-  padding-right: .5rem;
-  
+  padding-right: 0.5rem;
 }
 
-.chip, .reset-filter {
+.chip,
+.reset-filter {
   padding: 6px 12px;
   border: 2px solid #2e1503;
   border-radius: 20px;
@@ -226,12 +227,13 @@ scrollbar-color: transparent transparent;
   text-align: center;
 }
 
-.chip:hover, .reset-filter:hover {
-  background-color: #D2691E;
+.chip:hover,
+.reset-filter:hover {
+  background-color: #d2691e;
 }
 
 .chip.active {
-  background-color: #D2691E;
+  background-color: #d2691e;
   color: 2e1503;
 }
 
@@ -242,7 +244,7 @@ scrollbar-color: transparent transparent;
 }
 
 .selectButton {
-    width: 90%;
+  width: 90%;
   padding: 10px;
   font-size: 15px;
   background-color: beige;
@@ -250,13 +252,14 @@ scrollbar-color: transparent transparent;
   border: 2px solid #2e1503;
   border-radius: 2rem;
   cursor: pointer;
-  transition: background-color 0.2s ease;  
+  transition: background-color 0.2s ease;
 }
 
 .selectButton:hover {
-    background-color: #D2691E;
+  background-color: #d2691e;
 }
-.filter-btn, .download {
+.filter-btn,
+.download {
   width: 90%;
   padding: 10px;
   font-size: 15px;
@@ -269,14 +272,14 @@ scrollbar-color: transparent transparent;
 }
 
 .filter-btn:hover {
-  background-color: #D2691E;
+  background-color: #d2691e;
 }
 
 .download:hover {
-    background-color: green;
+  background-color: green;
 }
 .download {
-    background-color: #D2691E;
+  background-color: #d2691e;
 }
 
 .gallery {
@@ -325,14 +328,11 @@ scrollbar-color: transparent transparent;
   opacity: 1;
 }
 .card.selected {
-  border: 0.5rem solid #D2691E;
+  border: 0.5rem solid #d2691e;
   height: 9rem;
 }
 
 .download-section p {
-    text-align: center;
+  text-align: center;
 }
-
-
-
 </style>

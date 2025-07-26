@@ -1,11 +1,17 @@
 <template>
   <div class="loading-screen">
     <div class="center-content">
-<h1 class="clustra-logo">
-  <span v-for="(char, i) in 'Clustra'" :key="i" :style="{ animationDelay: `${i * 0.1}s` }" class="wave-letter">
-    {{ char }}
-  </span>
-</h1>      <p class="loading-text">Processing images, please wait...</p>
+      <h1 class="clustra-logo">
+        <span
+          v-for="(char, i) in 'Clustra'"
+          :key="i"
+          :style="{ animationDelay: `${i * 0.1}s` }"
+          class="wave-letter"
+        >
+          {{ char }}
+        </span>
+      </h1>
+      <p class="loading-text">Processing images, please wait...</p>
     </div>
   </div>
 </template>
@@ -42,8 +48,14 @@ onMounted(async () => {
       body: formData,
     });
 
-    const data = await response.json();
-    console.log("Received:", data);
+    const raw = await response.json();
+    console.log("Received:", raw);
+
+    type ExtractResultItem = {
+      filename: string;
+      individuals: string[];
+    };
+    const data = raw as { result: ExtractResultItem[] };
 
     data.result.forEach(({ filename, individuals }) => {
       const file = fileStore.files.find((f) => f.name === filename);
@@ -52,9 +64,9 @@ onMounted(async () => {
       }
     });
 
-    fileStore.people_faces = data.people_faces;
+    fileStore.people_faces = raw.people_faces;
 
-    router.replace("/identificationScreen"); // Replace instead of push
+    router.replace("/identificationScreen");
   } catch (err) {
     console.error("Failed to fetch:", err);
   }
@@ -63,7 +75,8 @@ onMounted(async () => {
 
 <style scoped>
 @keyframes wave {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -92,7 +105,7 @@ onMounted(async () => {
   font-size: 5rem;
   font-weight: 700;
   color: #5a3e2b;
-  letter-spacing: .5rem;
+  letter-spacing: 0.5rem;
 }
 
 .loading-text {

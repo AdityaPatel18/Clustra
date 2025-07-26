@@ -4,6 +4,8 @@
       <div class="title">Clustra</div>
 
       <div class="center-box">
+        <div class="center-box-header">Sort Photos by People</div>
+
         <div class="drop-area">
           <div
             class="inner-drop-box"
@@ -17,14 +19,13 @@
                 class="thumb"
               >
                 <img :src="file.url" :alt="file.name" class="thumb-img" />
-                <button class="remove-btn" @click=removeFile(index)>
-                </button>
+
+                <button class="remove-btn" @click="removeFile(index)"></button>
               </div>
             </div>
             <div v-else class="placeholder-text">Drag & Drop Files Here</div>
           </div>
 
-          <!-- Hidden file input -->
           <input
             type="file"
             ref="fileInputRef"
@@ -38,8 +39,8 @@
             <button class="btn" @click="triggerFileInput">From Computer</button>
             <button class="btn upload" @click="classifyPage">Upload</button>
           </div>
-        </div><div class="numberSelected">{{ uploadedCountText }}</div>
-
+        </div>
+        <div class="numberSelected">{{ uploadedCountText }}</div>
       </div>
     </div>
     <div class="info">
@@ -57,11 +58,10 @@
       <!-- Steps Section -->
       <div class="steps-section">
         <div class="step">
-          <img
-            class="step-image"
-            src="/images/pic01.jpg"
-            alt="Step 1: Upload Your Pictures"
-          />
+          <video class="step-image" autoplay muted playsinline>
+            <source src="/assets/videos/landing.mp4" type="video/mp4" />
+          </video>
+
           <div class="step-text">
             <h3>Upload Your Pictures</h3>
             <p>Drag and drop or select the photos you want to organize.</p>
@@ -69,11 +69,10 @@
         </div>
 
         <div class="step reverse">
-          <img
-            class="step-image"
-            src="/images/pic01.jpg"
-            alt="Step 2: Identify the Faces"
-          />
+          <video class="step-image" autoplay muted playsinline>
+            <source src="/assets/videos/identification.mp4" type="video/mp4" />
+          </video>
+
           <div class="step-text">
             <h3>Identify the Faces</h3>
             <p>
@@ -83,11 +82,10 @@
         </div>
 
         <div class="step">
-          <img
-            class="step-image"
-            src="/images/pic01.jpg"
-            alt="Step 3: Filter and Download"
-          />
+          <video class="step-image" autoplay muted playsinline>
+            <source src="/assets/videos/Clustering.mp4" type="video/mp4" />
+          </video>
+
           <div class="step-text">
             <h3>Filter and Download</h3>
             <p>
@@ -116,12 +114,11 @@ import { useRouter } from "vue-router";
 
 const fileStore = useFileStore();
 const router = useRouter();
-const fileInputRef = ref<HTMLInputElement | null>(null); // 👈 new
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const validImageTypes = ["image/png", "image/jpeg", "image/jpg", "image/heic"];
 const selectedFiles = computed(() => fileStore.files);
 
-// 👇 new method to trigger the hidden input
 function triggerFileInput() {
   fileInputRef.value?.click();
 }
@@ -129,7 +126,6 @@ function triggerFileInput() {
 const uploadedCountText = computed(() => {
   const count = selectedFiles.value.length;
   return `${count} uploaded. Max 50 imageToSquare.`;
-
 });
 function removeFile(index: number) {
   fileStore.files.splice(index, 1);
@@ -183,10 +179,28 @@ function classifyPage() {
   router.replace("/loading");
 }
 
+onMounted(() => {
+  const videos = document.querySelectorAll<HTMLVideoElement>(".step-image");
+
+  if (!videos || videos.length === 0) {
+    console.warn("No videos found with .step-image");
+    return;
+  }
+
+  const delaySeconds = 2;
+
+  videos.forEach((video) => {
+    video.addEventListener("ended", () => {
+      setTimeout(() => {
+        video.currentTime = 0;
+        video.play();
+      }, delaySeconds * 1000);
+    });
+  });
+});
 </script>
 
 <style scoped>
-/* Apply to both <html> and <body> just to be safe */
 html,
 body {
   margin: 0;
@@ -274,8 +288,6 @@ body {
   max-height: 300px;
 }
 
-
-
 .placeholder-text {
   width: 100%;
   text-align: center;
@@ -288,6 +300,14 @@ body {
   justify-content: center;
   align-items: center;
   height: 67vh;
+}
+
+.center-box-header {
+  align-items: start;
+  color: beige;
+  font-size: clamp(1.5rem, 10vh, 6rem);
+  margin-bottom: 2rem;
+  font-style: italic;
 }
 
 .drop-area {

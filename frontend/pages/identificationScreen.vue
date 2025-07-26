@@ -1,10 +1,8 @@
 <template>
-  
   <div class="container">
-          <div class="clustra-title">Clustra</div>
+    <div class="clustra-title">Clustra</div>
 
-    <h2 class="title">Who’s who? Label them before you go.
-</h2>
+    <h2 class="title">Who’s who? Label them before you go.</h2>
 
     <form @submit.prevent="submitLabels">
       <div class="grid">
@@ -25,22 +23,22 @@
 
       <button type="submit" class="submit-btn">Submit</button>
     </form>
-    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useFileStore } from '@/stores/fileStore'
+import { reactive, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useFileStore } from "@/stores/fileStore";
 
-const router = useRouter()
-const fileStore = useFileStore()
-const faces = fileStore.people_faces
-const nameInputs = reactive<Record<string, string>>({})
+const router = useRouter();
+const fileStore = useFileStore();
+const faces = fileStore.people_faces;
+const nameInputs = reactive<Record<string, string>>({});
 
 faces.forEach((f) => {
-  nameInputs[f.label] = ''
-})
+  nameInputs[f.label] = "";
+});
 
 function submitLabels() {
   fileStore.updateFaceLabels(nameInputs);
@@ -50,13 +48,14 @@ function submitLabels() {
 
 onMounted(() => {
   if (fileStore.files.length === 0) {
-    router.replace('/')
+    router.replace("/");
   }
-})
+});
 </script>
 
 <style scoped>
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
   margin: 0;
@@ -112,7 +111,8 @@ html, body {
   border-radius: 6px;
   border: 1px solid #2e1503;
   font-size: 0.9rem;
-background-color: beige;}
+  background-color: beige;
+}
 
 .submit-btn {
   display: block;

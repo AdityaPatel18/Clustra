@@ -12,7 +12,7 @@
   padding: 1.5rem 2rem;
   text-align: center;
   font-size: 0.9rem;
-  color: #F5F5DC;
+  color: #f5f5dc;
   margin-top: auto;
 }
 
@@ -20,5 +20,4 @@
   max-width: 1200px;
   margin: 0 auto;
 }
-
 </style>
