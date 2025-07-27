@@ -53,7 +53,7 @@ Future plans include transitioning to a **fully dataless web service**, dependin
 #### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/AdityaPatel18/Clustra.git
+git clone https://github.com/AdityaPatel18/Clustra
 cd Clustra
 ```
 ## 2. Install Dependencies using pip
