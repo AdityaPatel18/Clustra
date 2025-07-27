@@ -153,6 +153,13 @@ function handleDrop(event: DragEvent) {
 function handleDragOver(event: DragEvent) {
   event.preventDefault();
 }
+function classifyPage() {
+  if (fileStore.files.length === 0) {
+    alert("Please upload images first.");
+    return;
+  }
+  router.replace("/loading");
+}
 
 onMounted(() => {
   const videos = document.querySelectorAll<HTMLVideoElement>(".step-image");
