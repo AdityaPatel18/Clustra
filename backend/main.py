@@ -28,6 +28,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/ping")
+def ping():
+    return {"status": "ok"}
 
 class FaceData(BaseModel):
     vectors: list[list[float]] 

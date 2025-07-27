@@ -1,5 +1,32 @@
 <template>
   <div class="page-wrapper">
+    <div v-if="showModal" class="modal-overlay">
+      <div class="modal-box">
+        <h2>🔧 Localhost Backend Required</h2>
+        <p>
+          This app performs heavy image processing and requires a backend to be hosted locally.
+          <br />
+          Please clone and run the backend using the link below:
+        </p>
+        <a
+          href="https://github.com/your-username/your-backend-repo"
+          target="_blank"
+          class="link"
+        >
+          → Open GitHub Repo
+        </a>
+        <div class="modal-actions">
+          <button @click="closeModal">Got it</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Warning Banner -->
+    <div v-if="!backendAvailable" class="warning-banner">
+      ⚠️ Backend not detected. Please run it locally at
+      <code>http://localhost:3001</code> before uploading files.
+    </div>
+
     <div class="homepage">
       <div class="title">Clustra</div>
 
@@ -37,7 +64,13 @@
 
           <div class="button-row">
             <button class="btn" @click="triggerFileInput">From Computer</button>
-            <button class="btn upload" @click="classifyPage">Upload</button>
+            <button
+              class="btn upload"
+              @click="classifyPage"
+              :disabled="!backendAvailable"
+            >
+              Upload
+            </button>
           </div>
         </div>
         <div class="numberSelected">{{ uploadedCountText }}</div>
@@ -153,6 +186,7 @@ function handleDrop(event: DragEvent) {
 function handleDragOver(event: DragEvent) {
   event.preventDefault();
 }
+
 function classifyPage() {
   if (fileStore.files.length === 0) {
     alert("Please upload images first.");
@@ -160,6 +194,25 @@ function classifyPage() {
   }
   router.replace("/loading");
 }
+
+const showModal = ref(true);
+const backendAvailable = ref(false);
+
+function closeModal() {
+  showModal.value = false;
+}
+
+// Ping backend on mount
+onMounted(async () => {
+  try {
+    const res = await fetch("http://localhost:3001/ping");
+    if (res.ok) {
+      backendAvailable.value = true;
+    }
+  } catch (err) {
+    backendAvailable.value = false;
+  }
+});
 
 onMounted(() => {
   const videos = document.querySelectorAll<HTMLVideoElement>(".step-image");
@@ -431,4 +484,76 @@ body {
 .special-word {
   color: #d2691e;
 }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.modal-box {
+  background-color: #f7e8d0;
+  border: 2px solid #4b2e2e;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.modal-box h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.modal-box p {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.link {
+  color: #4b2e2e;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.link:hover {
+  color: #2f1c1c;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.modal-actions button {
+  background-color: #4b2e2e;
+  color: white;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+.modal-actions button:hover {
+  background-color: #3c1f1f;
+}
+
+/* Warning Banner */
+.warning-banner {
+  background-color: #f4d9b6;
+  border-bottom: 2px solid #4b2e2e;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 </style>
