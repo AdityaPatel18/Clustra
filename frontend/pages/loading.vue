@@ -43,9 +43,9 @@ onMounted(async () => {
   });
 
   try {
-    const backendURL = import.meta.env.VITE_BACKEND_URL;
+    //const backendURL = import.meta.env.VITE_BACKEND_URL;
 
-    const response = await fetch(`${backendURL}/extract`, {
+    const response = await fetch(`http://localhost:3001/extract`, {
       method: "POST",
       body: formData,
     });

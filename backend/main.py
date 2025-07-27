@@ -19,10 +19,10 @@ Base = declarative_base()
 
 app = FastAPI()
 
-origin = os.getenv("CORS_ORIGINS")
+# origin = os.getenv("CORS_ORIGINS")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[origin],
+    allow_origins=["https://clustra.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue"; // Add `ref`
+import { ref, computed } from "vue";
 import { useFileStore } from "@/stores/fileStore";
 import { useRouter } from "vue-router";
 
@@ -123,10 +123,6 @@ function triggerFileInput() {
   fileInputRef.value?.click();
 }
 
-const uploadedCountText = computed(() => {
-  const count = selectedFiles.value.length;
-  return `${count} uploaded. Max 50 imageToSquare.`;
-});
 function removeFile(index: number) {
   fileStore.files.splice(index, 1);
 }
@@ -137,14 +133,7 @@ function handleFileInput(event: Event) {
     const files = Array.from(input.files).filter((file) =>
       validImageTypes.includes(file.type)
     );
-
-    const availableSlots = 50 - (fileStore.files?.length ?? 0);
-    if (availableSlots <= 0) {
-      alert("You can upload a maximum of 50 images.");
-    } else {
-      const limitedFiles = files.slice(0, availableSlots);
-      fileStore.addFiles(limitedFiles);
-    }
+    fileStore.addFiles(files);
 
     input.value = "";
   }
@@ -157,26 +146,12 @@ function handleDrop(event: DragEvent) {
       validImageTypes.includes(file.type)
     );
 
-    const availableSlots = 50 - (fileStore.files?.length ?? 0);
-    if (availableSlots <= 0) {
-      alert("You can upload a maximum of 50 images.");
-    } else {
-      const limitedFiles = files.slice(0, availableSlots);
-      fileStore.addFiles(limitedFiles);
-    }
+    fileStore.addFiles(files);
   }
 }
 
 function handleDragOver(event: DragEvent) {
   event.preventDefault();
-}
-
-function classifyPage() {
-  if (fileStore.files.length === 0) {
-    alert("Please upload images first.");
-    return;
-  }
-  router.replace("/loading");
 }
 
 onMounted(() => {
@@ -310,8 +285,8 @@ body {
 }
 
 .drop-area {
-width: clamp(20rem, 40vw, 35rem);
-height: clamp(15rem, 30vw, 25rem);
+  width: clamp(20rem, 40vw, 35rem);
+  height: clamp(15rem, 30vw, 25rem);
   border: 2px solid tan;
   border-radius: 2rem;
   display: flex;

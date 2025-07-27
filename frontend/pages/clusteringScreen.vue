@@ -1,4 +1,5 @@
 <template>
+  <div class="page-wrapper">
   <div class="title-container">
     <div class="clustra-title">Clustra</div>
     <div class="center-subtitle">
@@ -47,6 +48,7 @@
       </div>
     </main>
   </div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -147,6 +149,11 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.page-wrapper {
+  background-color: beige;
+  height: 100vh;
+}
+
 .container {
   display: flex;
   margin: 0 auto;
@@ -313,7 +320,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8); /* Darker = more contrast */
+  background: rgba(0, 0, 0, 0.8);
   color: white;
   display: flex;
   align-items: center;
