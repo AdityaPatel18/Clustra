@@ -9,7 +9,7 @@
           Please clone and run the backend using the link below:
         </p>
         <a
-          href="https://github.com/your-username/your-backend-repo"
+          href="https://github.com/AdityaPatel18/Clustra"
           target="_blank"
           class="link"
         >
